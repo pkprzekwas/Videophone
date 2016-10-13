@@ -51,3 +51,7 @@ faces/*
 # secrets #
 ###########
 config.json
+
+# tox #
+#######
+.tox
