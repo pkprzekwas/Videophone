@@ -5,8 +5,73 @@ from config import json_headers, bin_headers, face_ids, json
 from app_logger import logging
 
 API_BASE = 'https://api.projectoxford.ai'
-API_DETECT = url_parser.urljoin(API_BASE, '/face/v1.0//detect?returnFaceId=true')
+API_DETECT = url_parser.urljoin(API_BASE, '/face/v1.0/detect?returnFaceId=true')
+API_IDENTIFY = url_parser.urljoin(API_BASE, '/face/v1.0/identify')
 API_GROUP_OPERATIONS = url_parser.urljoin(API_BASE, '/face/v1.0/persongroups/')
+
+
+def list_person_group(*, person_group: str) -> None:
+    url = url_parser.urljoin(API_GROUP_OPERATIONS, '{}/persons'.format(person_group))
+    response = requests.get(url=url,
+                            headers=json_headers)
+    if response.status_code == 200:
+        logging.info("{}: {}".format(response.status_code, response.text))
+    else:
+        message = json.loads(response.text)['error']['message']
+        raise AttributeError(message)
+
+
+def get_person_group(*, person_group: str) -> None:
+    url = url_parser.urljoin(API_GROUP_OPERATIONS, '{}'.format(person_group))
+    response = requests.get(url=url,
+                            headers=json_headers)
+    if response.status_code == 200:
+        logging.info("{}: {}".format(response.status_code, response.text))
+    else:
+        message = json.loads(response.text)['error']['message']
+        raise AttributeError(message)
+
+
+def get_training_status(*, person_group: str) -> None:
+    url = url_parser.urljoin(API_GROUP_OPERATIONS, '{}/training'.format(person_group))
+    response = requests.get(url=url,
+                            headers=json_headers)
+    if response.status_code == 200:
+        logging.info("{}: {}".format(response.status_code, response.text))
+    else:
+        message = json.loads(response.text)['error']['message']
+        raise AttributeError(message)
+
+
+def train_person_group(*, person_group: str) -> None:
+    url = url_parser.urljoin(API_GROUP_OPERATIONS, '{}/train'.format(person_group))
+    response = requests.post(url=url,
+                             headers=json_headers)
+    if response.status_code == 202:
+        logging.info("{}: {}".format(response.status_code, response.text))
+    else:
+        message = json.loads(response.text)['error']['message']
+        raise AttributeError(message)
+
+
+def identify_person(*, person_group: str, face_id: str) -> None:
+    url = API_IDENTIFY
+    payload = {
+        "personGroupId": person_group,
+        "faceIds": [
+            face_id
+        ],
+        "maxNumOfCandidatesReturned": 1,
+        "confidenceThreshold": 0.5
+    }
+    response = requests.post(url=url,
+                             data=json.dumps(payload),
+                             headers=json_headers)
+    if response.status_code == 200:
+        logging.info("{}: {}".format(response.status_code, response.text))
+    else:
+        message = json.loads(response.text)['error']['message']
+        raise AttributeError(message)
 
 
 def create_person_group(*, person_list_id, name='default', user_data='') -> None:
