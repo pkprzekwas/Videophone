@@ -1,8 +1,12 @@
 import urllib.parse as url_parser
 import requests
 
-from config import json_headers, bin_headers, face_ids, json
-from app_logger import logging
+try:
+    from .config import json_headers, bin_headers, face_ids, json
+    from .app_logger import logging
+except (ImportError, SystemError):
+    from config import json_headers, bin_headers, face_ids, json
+    from app_logger import logging
 
 API_BASE = 'https://api.projectoxford.ai'
 API_DETECT = url_parser.urljoin(API_BASE, '/face/v1.0/detect?returnFaceId=true')
@@ -10,12 +14,19 @@ API_IDENTIFY = url_parser.urljoin(API_BASE, '/face/v1.0/identify')
 API_GROUP_OPERATIONS = url_parser.urljoin(API_BASE, '/face/v1.0/persongroups/')
 
 
-def list_person_group(*, person_group: str) -> None:
+def list_person_group(*, person_group: str) -> (int, str):
+    """
+    Retrieve the information of a person group,
+    including its name and userData. This API
+    returns person group information only.
+    """
     url = url_parser.urljoin(API_GROUP_OPERATIONS, '{}/persons'.format(person_group))
     response = requests.get(url=url,
                             headers=json_headers)
-    if response.status_code == 200:
-        logging.info("{}: {}".format(response.status_code, response.text))
+    code, body = response.status_code, response.text
+    if code == 200:
+        logging.info("{}: {}".format(code, body))
+        return code, body
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)
@@ -27,6 +38,7 @@ def get_person_group(*, person_group: str) -> None:
                             headers=json_headers)
     if response.status_code == 200:
         logging.info("{}: {}".format(response.status_code, response.text))
+        return response.status_code
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)
@@ -38,6 +50,7 @@ def get_training_status(*, person_group: str) -> None:
                             headers=json_headers)
     if response.status_code == 200:
         logging.info("{}: {}".format(response.status_code, response.text))
+        return response.status_code
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)
@@ -49,6 +62,7 @@ def train_person_group(*, person_group: str) -> None:
                              headers=json_headers)
     if response.status_code == 202:
         logging.info("{}: {}".format(response.status_code, response.text))
+        return response.status_code
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)
@@ -69,6 +83,7 @@ def identify_person(*, person_group: str, face_id: str) -> None:
                              headers=json_headers)
     if response.status_code == 200:
         logging.info("{}: {}".format(response.status_code, response.text))
+        return response.status_code
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)
@@ -86,6 +101,7 @@ def create_person_group(*, person_list_id, name='default', user_data='') -> None
                             headers=json_headers)
     if response.status_code == 200:
         logging.info("{}: {}".format(response.status_code, response.text))
+        return response.status_code
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)
@@ -108,6 +124,7 @@ def add_face_to_person(*, image: str, group_id: str, person_id: str, user_data: 
                              )
     if response.status_code == 200:
         logging.info("{}: {}".format(response.status_code, response.text))
+        return response.status_code
     else:
         message = json.loads(response.text)['error']['message']
         raise AttributeError(message)

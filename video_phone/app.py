@@ -1,8 +1,12 @@
-import api
-from config import PERSON_GROUP_ID
+try:
+    import app.api as api
+    from .config import PERSON_GROUP_ID
+except (ImportError, SystemError):
+    import api
+    from config import PERSON_GROUP_ID
 
-image = '../faces/obama1.jpg'
-image2 = '../faces/obama2.jpg'
+image = '../faces/mark1.jpg'
+image2 = '../faces/mark2.jpg'
 
 
 def add_new_person_to_group(*, image, name, group):

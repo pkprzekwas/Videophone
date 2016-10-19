@@ -1,6 +1,11 @@
 import json
+import os
+from pathlib import Path
 
-with open("../config.json") as config_json:
+project_root = str(Path(__file__).resolve().parents[1])
+config_path = os.path.join(project_root, 'config.json')
+
+with open(config_path) as config_json:
     data = config_json.read()
     configuration = json.loads(data)
 
