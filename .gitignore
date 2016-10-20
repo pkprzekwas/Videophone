@@ -55,3 +55,4 @@ config.json
 # tox #
 #######
 .tox
+.cache
