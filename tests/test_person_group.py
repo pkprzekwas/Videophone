@@ -1,20 +1,4 @@
 import pytest
-from uuid import uuid4
-from video_phone.api import PersonGroup
-
-image = '../faces/mark1.jpg'
-image2 = '../faces/mark2.jpg'
-
-
-@pytest.fixture(scope='session')
-def uuid():
-    unique_code = uuid4()
-    return str(unique_code)
-
-
-@pytest.fixture(scope='session')
-def person_group(uuid):
-    return PersonGroup(group_id=uuid)
 
 
 def test_create_person_group(person_group, uuid):
