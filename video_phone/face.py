@@ -12,9 +12,10 @@ except (ImportError, SystemError):
 
 
 class Face(ApiBase):
-    def __init__(self):
+    def __init__(self, *, id=None):
         super(Face, self).__init__()
         self.api_detect = url_parser.urljoin(self.api_base, '/face/v1.0/detect?returnFaceId=true')
+        self.id = id
 
     def detect(self, *, image: str) -> str:
         """
@@ -27,6 +28,7 @@ class Face(ApiBase):
         if response.status_code == 200:
             logging.info("{}: {}".format(response.status_code, response.text))
             face_id = json.loads(response.text)[0]['faceId']
+            self.id = face_id
             return face_id
         else:
             message = json.loads(response.text)['error']['message']

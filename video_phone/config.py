@@ -5,9 +5,9 @@ from pathlib import Path
 project_root = str(Path(__file__).resolve().parents[1])
 config_path = os.path.join(project_root, 'config.json')
 
-image = '../faces/mark1.jpg'
-image2 = '../faces/mark2.jpg'
-
+IMAGE_I = '../faces/mark1.jpg'
+IMAGE_II = '../faces/mark2.jpg'
+IMAGE_III = '../faces/Oswald.jpg'
 
 with open(config_path) as config_json:
     data = config_json.read()

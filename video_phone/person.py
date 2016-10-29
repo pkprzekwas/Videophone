@@ -75,9 +75,11 @@ class Person(ApiBase):
         response = requests.post(url=url,
                                  data=json.dumps(payload),
                                  headers=json_headers)
+        code, body = response.status_code, response.text
         if response.status_code == 200:
-            logging.info("{}: {}".format(response.status_code, response.text))
-            return response.status_code
+            logging.info("{}: {}".format(code, body))
+            self.id = json.loads(body)[0]['candidates'][0]['personId']
+            return code, body
         else:
             message = json.loads(response.text)['error']['message']
             raise AttributeError(message)
@@ -97,9 +99,10 @@ class Person(ApiBase):
                                  data=binary_image,
                                  headers=bin_headers
                                  )
+        code, body = response.status_code, response.text
         if response.status_code == 200:
-            logging.info("{}: {}".format(response.status_code, response.text))
-            return response.status_code
+            logging.info("{}: {}".format(code, body))
+            return code, body
         else:
             message = json.loads(response.text)['error']['message']
             raise AttributeError(message)
