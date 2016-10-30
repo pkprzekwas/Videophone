@@ -32,13 +32,8 @@ class PersonGroup(ApiBase):
         response = requests.put(url=url,
                                 data=json.dumps(payload),
                                 headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code
 
     def get(self) -> (int, str):
         """
@@ -48,25 +43,15 @@ class PersonGroup(ApiBase):
         url = url_parser.urljoin(self.api_group_operations, '{}'.format(self.group_id))
         response = requests.get(url=url,
                                 headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code
 
     def delete(self) -> (int, str):
         url = url_parser.urljoin(self.api_group_operations, '{}'.format(self.group_id))
         response = requests.delete(url=url,
                                    headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code
 
     def list(self) -> (int, str):
         """
@@ -77,34 +62,19 @@ class PersonGroup(ApiBase):
         url = url_parser.urljoin(self.api_group_operations, '{}/persons'.format(self.group_id))
         response = requests.get(url=url,
                                 headers=json_headers)
-        code, body = response.status_code, response.text
-        if code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(body)['error']['message']
-            raise AttributeError(message)
+        code, body = self.handle_response(response)
+        return code, json.loads(body)
 
     def get_training_status(self) -> (int, str):
         url = url_parser.urljoin(self.api_group_operations, '{}/training'.format(self.group_id))
         response = requests.get(url=url,
                                 headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(body)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code
 
     def train(self, *, person_group: str) -> None:
         url = url_parser.urljoin(self.api_group_operations, '{}/train'.format(person_group))
         response = requests.post(url=url,
                                  headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 202:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(body)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code

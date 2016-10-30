@@ -17,6 +17,7 @@ class Person(ApiBase):
         self.api_identify = url_parser.urljoin(self.api_base, '/face/v1.0/identify')
         self.name = name
         self.id = id
+        self._has_id = True if self.id is not None else False
 
     def __str__(self):
         return self.name
@@ -26,6 +27,10 @@ class Person(ApiBase):
 
     def __dict__(self):
         return {'name': self.name}
+
+    @property
+    def has_id(self) -> bool:
+        return self._has_id
 
     def create(self, *, group_id: str, name: str) -> str:
         """
@@ -40,27 +45,17 @@ class Person(ApiBase):
         response = requests.post(url=url,
                                  data=json.dumps(payload),
                                  headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            person_id = json.loads(body)['personId']
-            self.id = person_id
-            return code, body, person_id
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, body = self.handle_response(response)
+        person_id = json.loads(body)['personId']
+        self.id = person_id
+        return code
 
     def delete(self, group_id: str):
         url = url_parser.urljoin(self.api_group_operations, '{}/persons/{}'.format(group_id, self.id))
         response = requests.delete(url=url,
                                    headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code
 
     def identify(self, *, person_group: str, face_id: str) -> None:
         url = self.api_identify
@@ -75,14 +70,12 @@ class Person(ApiBase):
         response = requests.post(url=url,
                                  data=json.dumps(payload),
                                  headers=json_headers)
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            self.id = json.loads(body)[0]['candidates'][0]['personId']
-            return code, body
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, body = self.handle_response(response)
+        candidates = json.loads(body)[0]['candidates']
+        if candidates:
+            self.id = candidates[0]['personId']
+            self._has_id = True
+        return code
 
     def add_face(self, *, image: str, group_id: str, person_id: str, user_data: str=None) -> None:
         """
@@ -99,10 +92,5 @@ class Person(ApiBase):
                                  data=binary_image,
                                  headers=bin_headers
                                  )
-        code, body = response.status_code, response.text
-        if response.status_code == 200:
-            logging.info("{}: {}".format(code, body))
-            return code, body
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, _ = self.handle_response(response)
+        return code

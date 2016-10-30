@@ -25,11 +25,7 @@ class Face(ApiBase):
         response = requests.post(url=self.api_detect,
                                  data=binary_image,
                                  headers=bin_headers)
-        if response.status_code == 200:
-            logging.info("{}: {}".format(response.status_code, response.text))
-            face_id = json.loads(response.text)[0]['faceId']
-            self.id = face_id
-            return face_id
-        else:
-            message = json.loads(response.text)['error']['message']
-            raise AttributeError(message)
+        code, body = self.handle_response(response)
+        face_id = json.loads(body)[0]['faceId']
+        self.id = face_id
+        return code

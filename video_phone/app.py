@@ -12,19 +12,34 @@ except (ImportError, SystemError):
     from config import PERSON_GROUP_ID, IMAGE_I, IMAGE_II, IMAGE_III
 
 
-def flow_one():
-    person_group = PersonGroup(group_id=PERSON_GROUP_ID)
+def flow_one(group_id=PERSON_GROUP_ID, image=IMAGE_II):
+    person_group = PersonGroup(group_id=group_id)
     face = Face()
     person = Person()
-    face.detect(image=IMAGE_II)
+    face.detect(image=image)
     person.identify(person_group=person_group.group_id, face_id=face.id)
-    print(person.id)
+    if person.has_id:
+        person_group = PersonGroup(group_id=group_id)
+        _, body = person_group.list()
+        for each in body:
+            if person.id == each['personId']:
+                print('{} : {}'.format(each['name'], each['personId']))
+    else:
+        print("What's your name?: ")
+        name = input('--> ')
+        person.create(group_id=group_id, name=name)
+        person.add_face(image=image)
+        print('{} : {}'.format(person.name, person.id))
+
+
+def clear_group(group_id):
+    person_group = PersonGroup(group_id=group_id)
     _, body = person_group.list()
     body = json.loads(body)
     for each in body:
         print('{} : {}'.format(each['name'], each['personId']))
-        # temp = Person(id=each['personId'])
-        # temp.delete(group_id=PERSON_GROUP_ID)
+        temp = Person(id=each['personId'])
+        temp.delete(group_id=PERSON_GROUP_ID)
     pass
 
 
