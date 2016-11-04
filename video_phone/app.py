@@ -1,4 +1,10 @@
 import json
+import picamera
+import requests
+import os
+from socketIO_client import SocketIO, LoggingNamespace
+
+app = 'http://helperpi-qbs19941.c9users.io'
 
 try:
     from video_phone.face import Face
@@ -42,6 +48,18 @@ def clear_group(group_id):
         temp.delete(group_id=PERSON_GROUP_ID)
     pass
 
+def on_rr_response(*args):
+    f = 'image.jpg'
+    camera = picamera.PiCamera()
+    camera.capture(f)
+    camera.close()
+    r = requests.post('{}/upload'.format(app), files={'file': (f, open(f, 'rb'), 'application/vnd.ms-excel', {'Expires': '0'})})
+    socketIO.emit('recognition response')
 
 if __name__ == "__main__":
-    flow_one()
+    #flow_one()
+    with SocketIO(app, 8080, LoggingNamespace) as socketIO:
+        socketIO.on('recognition request', on_rr_response)
+        socketIO.wait()
+
+
