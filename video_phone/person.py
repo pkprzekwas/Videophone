@@ -12,25 +12,12 @@ except (ImportError, SystemError):
 
 
 class Person(ApiBase):
-    def __init__(self, *, name=None, id=None):
+    def __init__(self, *, name: str=None, pid: str=None):
         super(Person, self).__init__()
         self.api_identify = url_parser.urljoin(self.api_base, '/face/v1.0/identify')
         self.name = name
-        self.id = id
-        self._has_id = True if self.id is not None else False
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return self.name
-
-    def __dict__(self):
-        return {'name': self.name}
-
-    @property
-    def has_id(self) -> bool:
-        return self._has_id
+        self.pid = pid
+        self.has_pid = True if self.pid is not None else False
 
     def create(self, *, group_id: str, name: str) -> str:
         """
@@ -47,11 +34,13 @@ class Person(ApiBase):
                                  headers=json_headers)
         code, body = self.handle_response(response)
         person_id = json.loads(body)['personId']
-        self.id = person_id
+        self.pid = person_id
+        self.has_pid = True
+        self.name = name
         return code
 
     def delete(self, group_id: str):
-        url = url_parser.urljoin(self.api_group_operations, '{}/persons/{}'.format(group_id, self.id))
+        url = url_parser.urljoin(self.api_group_operations, '{}/persons/{}'.format(group_id, self.pid))
         response = requests.delete(url=url,
                                    headers=json_headers)
         code, _ = self.handle_response(response)
@@ -73,8 +62,8 @@ class Person(ApiBase):
         code, body = self.handle_response(response)
         candidates = json.loads(body)[0]['candidates']
         if candidates:
-            self.id = candidates[0]['personId']
-            self._has_id = True
+            self.pid = candidates[0]['personId']
+            self.has_pid = True
         return code
 
     def add_face(self, *, image: str, group_id: str, person_id: str, user_data: str=None) -> None:

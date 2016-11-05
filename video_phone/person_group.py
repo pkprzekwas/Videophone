@@ -72,9 +72,9 @@ class PersonGroup(ApiBase):
         code, _ = self.handle_response(response)
         return code
 
-    def train(self, *, person_group: str) -> None:
-        url = url_parser.urljoin(self.api_group_operations, '{}/train'.format(person_group))
+    def train(self, *, group_id) -> None:
+        url = url_parser.urljoin(self.api_group_operations, '{}/train'.format(group_id))
         response = requests.post(url=url,
                                  headers=json_headers)
-        code, _ = self.handle_response(response)
+        code = self.handle_response(response)
         return code

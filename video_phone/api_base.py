@@ -17,6 +17,9 @@ class ApiBase(object):
         if response.status_code == 200:
             logging.info("{}: {}".format(code, body))
             return code, body
+        elif response.status_code == 202:
+            logging.info("code: {}".format(code))
+            return code
         else:
             message = json.loads(response.text)['error']['message']
             raise AttributeError(message)
