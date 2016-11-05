@@ -12,7 +12,7 @@ except (ImportError, SystemError):
     from config import PERSON_GROUP_ID, IMAGE_I, IMAGE_II, IMAGE_III
 
 
-def flow_one(group_id=PERSON_GROUP_ID, image=IMAGE_I):
+def flow_one(group_id=PERSON_GROUP_ID, image=IMAGE_III):
     person_group = PersonGroup(group_id=group_id)
     person_group.train(group_id=group_id)
     face = Face()
