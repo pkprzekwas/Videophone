@@ -26,6 +26,9 @@ class Face(ApiBase):
                                  data=binary_image,
                                  headers=bin_headers)
         code, body = self.handle_response(response)
-        face_id = json.loads(body)[0]['faceId']
-        self.id = face_id
-        return code
+        try:
+            face_id = json.loads(body)[0]['faceId']
+            self.id = face_id
+            return code
+        except Exception:    
+            return 500

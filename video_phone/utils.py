@@ -19,7 +19,7 @@ def flow_one(group_id=PERSON_GROUP_ID, image=IMAGE_III):
     person = Person()
     code = face.detect(image=image)
     if code != 200:
-        return 'No face was detected'
+        return 'no_face'
     person.identify(person_group=person_group.group_id, face_id=face.id)
     if person.has_pid:
         _, body = person_group.list()
@@ -28,12 +28,12 @@ def flow_one(group_id=PERSON_GROUP_ID, image=IMAGE_III):
                 print('{} : {}'.format(each['name'], each['personId']))
                 return each['name']
     else:
-        print("What's your name?: ")
-        name = input('--> ')
-        person.create(group_id=group_id, name=name)
-        person.add_face(group_id=group_id, person_id=person.pid, image=image)
-        print('{} : {}'.format(person.name, person.pid))
-        return person.name
+        #print("What's your name?: ")
+        #name = input('--> ')
+        #person.create(group_id=group_id, name=name)
+        #person.add_face(group_id=group_id, person_id=person.pid, image=image)
+        #print('{} : {}'.format(person.name, person.pid))
+        return 'not_recognized'
 
 
 def create_group(name, user_data):
