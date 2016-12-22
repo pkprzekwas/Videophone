@@ -24,6 +24,7 @@ except (ImportError, SystemError):
 def on_rr_response(*args):
     f = 'temp_image.jpg'
     camera = picamera.PiCamera()
+    camera.resolution = (700, 700)
     camera.capture(f)
     camera.close()
     r = requests.post('{}/upload'.format(app),
